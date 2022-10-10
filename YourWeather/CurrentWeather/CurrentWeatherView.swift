@@ -13,44 +13,22 @@ struct CurrentWeatherView: View {
     @State var searchText = ""
     @FocusState var searching: Bool
     @StateObject var viewModel: ViewModel
-    var locationManager = ViewModel.locationManager
-    
-    let userDefaults = UserDefaults.standard
 
-    
-    var niceGreen: Color = Color(red: 55/255  , green: 118/255 , blue: 127/255)
-    var niceGreen2: Color = Color(red: 83/255  , green: 129/255 , blue: 138/255)
-    
     init(viewModel: ViewModel = .init()){
         _viewModel = StateObject(wrappedValue: viewModel)
-        userDefaults.set("Kyiv", forKey: "city")
-        }
+                }
+    
     var body: some View {
         VStack{
             ZStack {
                 Rectangle()
-                    .foregroundColor(niceGreen2)
+                    .foregroundColor(Color("LightGree"))
                 HStack {
                     Image(systemName: "magnifyingglass")
                     TextField("Search ..", text: $viewModel.location, onCommit: {
                                                     viewModel.getWeather()
                     })
                         .focused($searching)
-                        
-   //                 {
-   //                     startedEditing in
-   //                          if startedEditing {
-   //                              withAnimation {
-   //                                  searching = true
-   //                                  userDefaults.set(searchText, forKey: "city")
-   //
-   //                              }
-   //                          }
-   //                 }onCommit: {
-   //                  withAnimation {
-   //                                            searching = false
-   //                  }
-   //                                }
                 }
                 .foregroundColor(.white)
                 .padding(.leading, 13)
@@ -71,7 +49,7 @@ struct CurrentWeatherView: View {
                     ZStack{
                         Text("\(Int(viewModel.currentWeather!.main.temp))°")
                             .font(.system(size: 130, weight: .medium, design: .rounded))
-                            .gradientForeground(colors: [niceGreen, .white])
+                            .gradientForeground(colors: [Color("NiceGreen"), .white])
                             .foregroundColor(.white)
                         
                         AsyncImage(url: URL(string:
@@ -95,7 +73,7 @@ struct CurrentWeatherView: View {
                         RoundedRectangle(cornerRadius: 30, style: .circular)
                         //.background(niceGreen2)
                         
-                            .foregroundColor(niceGreen2)
+                            .foregroundColor(Color("LightGreen"))
                         HStack{
                             
                             
@@ -107,7 +85,6 @@ struct CurrentWeatherView: View {
                                     .font(.system(size: 32, weight: .regular, design: .rounded))
                             }
                             
-                            //                        .frame(width: 50, height: 50, alignment: .center)
                             VStack{
                                 Text("Wind Speed")
                                     .font(.system(size: 18, weight: .regular, design: .rounded))
@@ -127,11 +104,6 @@ struct CurrentWeatherView: View {
                         .foregroundColor(.white)
                     }.offset(y: 80)
                         .frame(width: 350, height: 100)
-                    
-                    
-                    
-                    
-                    //.edgesIgnoringSafeArea(.all)
                 }
                 
             }else{
@@ -140,27 +112,15 @@ struct CurrentWeatherView: View {
             }
                 
         }
-        //.onAppear(perform: viewModel.getStartWeather)
         .padding(.top)
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .greatestFiniteMagnitude,alignment: .top)
-        //.onDisappear(perform: viewModel.stopUpdating)
-        
-        
-        .background(niceGreen)
+        .background(Color("NiceGreen"))
     }
         
         
 
     
 }
-//struct SearchBar: View {
-//    @Binding var searchText: String
-//    @FocusState var searching: Bool
-//    let userDefaults = UserDefaults.standard
-//    var niceGreen2: Color = Color(red: 83/255  , green: 129/255 , blue: 138/255)
-//     var body: some View {
-//     }
-// }
 
 struct CurrentWeatherView_Previews: PreviewProvider {
     static var previews: some View {

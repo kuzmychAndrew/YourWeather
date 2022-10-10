@@ -13,11 +13,10 @@ extension CurrentWeatherView{
         @Published private(set) var currentWeather: CurrentWeather?
         var location = ""
         var lat: Double?
-        var locationManager:CLLocationManager?
-        let network: NetworkProtocol
         var lon: Double?
         {
             didSet{
+
                 getStartWeather()
                 locationManager?.stopUpdatingLocation()
                 locationManager = nil
@@ -25,6 +24,9 @@ extension CurrentWeatherView{
         }
 
         
+        
+        var locationManager:CLLocationManager?
+        let network: NetworkProtocol
         init(currentWeather: CurrentWeather? = nil, network: NetworkProtocol = Network(), locationManager:CLLocationManager = CLLocationManager()) {
             self.locationManager = locationManager
             self.currentWeather = currentWeather
@@ -34,6 +36,7 @@ extension CurrentWeatherView{
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
             locationManager.delegate = self
+
         }
         func getWeather(){
                 CLGeocoder().geocodeAddressString(self.location) { (placemark, error) in
