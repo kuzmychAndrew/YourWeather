@@ -25,6 +25,7 @@ struct CurrentWeatherView: View {
                     .foregroundColor(Color("LightGree"))
                 HStack {
                     Image(systemName: "magnifyingglass")
+                        .foregroundColor(Color("Orange"))
                     TextField("Search ..", text: $viewModel.location, onCommit: {
                                                     viewModel.getWeather()
                     })

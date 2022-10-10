@@ -23,7 +23,7 @@ struct StartView: View {
                         Label("Weekly", systemImage : "calendar.circle")
                     }
             }
-            .accentColor(.orange)
+            .accentColor(Color("Orange"))
         }
     }
 }

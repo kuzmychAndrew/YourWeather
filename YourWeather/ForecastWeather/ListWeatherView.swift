@@ -26,6 +26,7 @@ struct ListWeatherView: View{
                     .foregroundColor(Color("LightGreen"))
                 HStack {
                     Image(systemName: "magnifyingglass")
+                        .foregroundColor(Color("Orange"))
                     TextField("Search ..", text: $viewModel.location, onCommit: {
                         viewModel.getForecastWeather()
                     })
@@ -39,18 +40,19 @@ struct ListWeatherView: View{
             .padding()
             
             
-            Text("Kyiv")
-                .font(.system(size: 28, weight: .medium, design: .rounded))
-                .frame(width: 300, height: 50, alignment: .leading)
-                .foregroundColor(Color("NiceGreen"))
+           
             if viewModel.forecastWeather != nil{
                 VStack{
+                    Text(viewModel.forecastWeather!.city)
+                        .font(.system(size: 28, weight: .medium, design: .rounded))
+                        .frame(width: 300, height: 50, alignment: .leading)
+                        .foregroundColor(Color("NiceGreen"))
                     
                     //Text(viewModel.forecastWeather!.city)
                     List(viewModel.forecastWeather!.list, id: \.self){item in
                         HStack{
                             Text(item.date)
-                                .frame(width: 100)
+                                .frame(width: 100, alignment: .leading)
                                 .multilineTextAlignment(.leading)
                                 .font(.system(size: 24, weight: .regular, design: .rounded))
                             Spacer()
