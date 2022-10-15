@@ -11,7 +11,7 @@ struct StartView: View {
     @State var index = 0
     var body: some View {
         NavigationView {
-            TabView(){
+            TabView {
                 CurrentWeatherView()
                     .tag(0)
                     .tabItem {
@@ -20,7 +20,7 @@ struct StartView: View {
                 ListWeatherView()
                     .tag(1)
                     .tabItem {
-                        Label("Weekly", systemImage : "calendar.circle")
+                        Label("Weekly", systemImage: "calendar.circle")
                     }
             }
             .accentColor(Color("Orange"))

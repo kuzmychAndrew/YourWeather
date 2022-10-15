@@ -5,7 +5,6 @@
 
 import Foundation
 
-
 struct CurrentWeather: Codable {
     let weather: [Weather]
     let main: MainClass
@@ -13,7 +12,7 @@ struct CurrentWeather: Codable {
     let wind: Wind
     let rain: Rain?
     let clouds: Clouds
-    let dt: Int
+    let date: Int
     let timezone, id: Int
     let name: String
     let cod: Int
@@ -42,7 +41,7 @@ struct Coord: Codable {
 
 // MARK: - List
 struct WeatherList: Codable {
-    let dt: Int
+    let date: Int
     let main: MainClass
     let weather: [Weather]
     let clouds: Clouds
@@ -50,11 +49,11 @@ struct WeatherList: Codable {
     let visibility: Int
     let pop: Double
     let rain: Rain?
-    let dtTxt: String
+    let dateTxt: String
 
     enum CodingKeys: String, CodingKey {
-        case dt, main, weather, clouds, wind, visibility, rain, pop
-        case dtTxt = "dt_txt"
+        case date, main, weather, clouds, wind, visibility, rain, pop
+        case dateTxt = "date_txt"
     }
 }
 
@@ -67,7 +66,7 @@ struct Clouds: Codable {
 struct MainClass: Codable {
     let temp, feelsLike, tempMin, tempMax: Double
     let pressure: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case temp
         case feelsLike = "feels_like"
@@ -86,9 +85,6 @@ struct Rain: Codable {
     }
 }
 
-
-
-
 // MARK: - Weather
 struct Weather: Codable {
     let id: Int
@@ -102,8 +98,6 @@ struct Weather: Codable {
         case icon
     }
 }
-
-
 
 // MARK: - Wind
 struct Wind: Codable {

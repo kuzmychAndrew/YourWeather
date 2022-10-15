@@ -9,78 +9,84 @@ import Foundation
 import Alamofire
 import CoreLocation
 
-protocol NetworkProtocol{
-    func fetchForecastWeather(lat: Double,lon: Double, comletion: @escaping(SimpleWeatherModel) -> ())
-    func fetchCurrentWeather(lat: Double,lon: Double ,comletion: @escaping(CurrentWeather) -> ())
+protocol NetworkProtocol {
+    func fetchForecastWeather(lat: Double, lon: Double, comletion: @escaping(SimpleWeatherModel) -> Void)
+    func fetchCurrentWeather(lat: Double, lon: Double, comletion: @escaping(CurrentWeather) -> Void)
 }
 
 class Network: ObservableObject, NetworkProtocol {
-    
+
     let forecastApiKey = "37639423ae4bdf88965382aef6cf3ccd"
     let forecastBaseUrl = "https://api.openweathermap.org/data/2.5/forecast?"
     let currentUrl = "https://api.openweathermap.org/data/2.5/weather?"
-    
-    func fetchForecastWeather(lat: Double,lon: Double, comletion: @escaping(SimpleWeatherModel) -> ()){
+
+    func fetchForecastWeather(lat: Double, lon: Double, comletion: @escaping(SimpleWeatherModel) -> Void) {
         let units = "metric"
-        if let forecastUrl = URL(string: "\(forecastBaseUrl)lat=\(lat)&lon=\(lon)&units=\(units)&appid=\(forecastApiKey)"){
+        // swiftlint:disable:next line_length
+        if let forecastUrl = URL(string: "\(forecastBaseUrl)lat=\(lat)&lon=\(lon)&units=\(units)&appid=\(forecastApiKey)") {
             let request = AF.request(forecastUrl)
             request.responseDecodable(of: Welcome.self) { response in
-                if let weather = response.value{
+                if let weather = response.value {
                     let simpleWeather = self.toSimpleModel(weather: weather)
                     comletion(simpleWeather)
-                } else{
+                } else {
                     print(response.error!)
                 }
             }
         }
     }
-    func fetchCurrentWeather(lat: Double,lon: Double ,comletion: @escaping(CurrentWeather) -> ()){
+    func fetchCurrentWeather(lat: Double, lon: Double, comletion: @escaping(CurrentWeather) -> Void) {
         let units = "metric"
-        if let currentUrl = URL(string: "\(currentUrl)lat=\(lat)&lon=\(lon)&units=\(units)&appid=\(forecastApiKey)"){
+        if let currentUrl = URL(string: "\(currentUrl)lat=\(lat)&lon=\(lon)&units=\(units)&appid=\(forecastApiKey)") {
             let request = AF.request(currentUrl)
             request.responseDecodable(of: CurrentWeather.self) { response in
-                if let weather = response.value{
+                if let weather = response.value {
                     comletion(weather)
-                    
-                } else{
+
+                } else {
                     print(response.error!)
                 }
             }
-            
+
         }
     }
-    
-    func miliToDate(dt:Int)-> String{
-        let date = Date(timeIntervalSince1970: TimeInterval((dt)))
+
+    func miliToDate(date: Int) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval((date)))
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE"
         let rigthDate = formatter.string(from: date as Date)
-        
+
         return rigthDate.capitalized
     }
-    
-    func toSimpleModel(weather: Welcome)-> SimpleWeatherModel{
+
+    func toSimpleModel(weather: Welcome) -> SimpleWeatherModel {
         var listWeather: [ListWeather] = []
-        var dayOfWeek:[String] = []
+        var dayOfWeek: [String] = []
         var temp: [Double] = []
-        for i in weather.list{
-            let newDate = miliToDate(dt: i.dt)
-            if dayOfWeek.contains(newDate) || dayOfWeek.isEmpty{
+        for ind in weather.list {
+            let newDate = miliToDate(date: ind.date)
+            if dayOfWeek.contains(newDate) || dayOfWeek.isEmpty {
                 dayOfWeek.append(newDate)
-                temp.append(i.main.temp)
-            }else{
-                let item = ListWeather(date: miliToDate(dt: i.dt), tempMax: Int(temp.max()!), tempMin: Int(temp.min()!), mainWeather: i.weather[0].weatherDescription, windSpeed: i.wind.speed, icon: i.weather[0].icon, visibility: i.visibility)
+                temp.append(ind.main.temp)
+            } else {
+                let item = ListWeather(date: miliToDate(date: ind.date),
+                                       tempMax: Int(temp.max()!),
+                                       tempMin: Int(temp.min()!),
+                                       mainWeather: ind.weather[0].weatherDescription,
+                                       windSpeed: ind.wind.speed,
+                                       icon: ind.weather[0].icon,
+                                       visibility: ind.visibility)
                 listWeather.append(item)
-                
+
                 temp = []
                 dayOfWeek.append(newDate)
-                temp.append(i.main.temp)
-                
+                temp.append(ind.main.temp)
+
             }
         }
         let mainWeather = SimpleWeatherModel(city: weather.city.name, list: listWeather)
         return mainWeather
     }
-    
-    
+
 }
