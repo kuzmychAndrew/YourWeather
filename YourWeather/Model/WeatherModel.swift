@@ -12,7 +12,7 @@ struct CurrentWeather: Codable {
     let wind: Wind
     let rain: Rain?
     let clouds: Clouds
-    let date: Int
+    let dt: Int
     let timezone, id: Int
     let name: String
     let cod: Int
@@ -41,7 +41,7 @@ struct Coord: Codable {
 
 // MARK: - List
 struct WeatherList: Codable {
-    let date: Int
+    let dt: Int
     let main: MainClass
     let weather: [Weather]
     let clouds: Clouds
@@ -49,11 +49,9 @@ struct WeatherList: Codable {
     let visibility: Int
     let pop: Double
     let rain: Rain?
-    let dateTxt: String
 
     enum CodingKeys: String, CodingKey {
-        case date, main, weather, clouds, wind, visibility, rain, pop
-        case dateTxt = "date_txt"
+        case dt, main, weather, clouds, wind, visibility, rain, pop
     }
 }
 

@@ -65,12 +65,12 @@ class Network: ObservableObject, NetworkProtocol {
         var dayOfWeek: [String] = []
         var temp: [Double] = []
         for ind in weather.list {
-            let newDate = miliToDate(date: ind.date)
+            let newDate = miliToDate(date: ind.dt)
             if dayOfWeek.contains(newDate) || dayOfWeek.isEmpty {
                 dayOfWeek.append(newDate)
                 temp.append(ind.main.temp)
             } else {
-                let item = ListWeather(date: miliToDate(date: ind.date),
+                let item = ListWeather(date: miliToDate(date: ind.dt),
                                        tempMax: Int(temp.max()!),
                                        tempMin: Int(temp.min()!),
                                        mainWeather: ind.weather[0].weatherDescription,

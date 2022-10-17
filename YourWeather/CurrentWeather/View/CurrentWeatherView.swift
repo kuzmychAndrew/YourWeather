@@ -22,11 +22,11 @@ struct CurrentWeatherView: View {
         VStack {
             ZStack {
                 Rectangle()
-                    .foregroundColor(Color("LightGree"))
+                    .foregroundColor(Color(Asset.Assets.niceGreen.color))
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("Orange"))
-                    TextField("Search ..", text: $viewModel.location, onCommit: {
+                        .foregroundColor(Color(Asset.Assets.orange.color))
+                    TextField(Strings.CurrentWeatherView.SearchBar.title, text: $viewModel.location, onCommit: {
                                                     viewModel.getWeather()
                     })
                         .focused($searching)
@@ -50,7 +50,7 @@ struct CurrentWeatherView: View {
                     ZStack {
                         Text("\(Int(viewModel.currentWeather!.main.temp))°")
                             .font(.system(size: 130, weight: .medium, design: .rounded))
-                            .gradientForeground(colors: [Color("NiceGreen"), .white])
+                            .gradientForeground(colors: [Color(Asset.Assets.niceGreen.color), .white])
                             .foregroundColor(.white)
                         AsyncImage(url: URL(string:
                                                 // swiftlint:disable:next line_length
@@ -69,11 +69,11 @@ struct CurrentWeatherView: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 30, style: .circular)
 
-                            .foregroundColor(Color("LightGreen"))
+                            .foregroundColor(Color(Asset.Assets.lightGreen.color))
                         HStack {
 
                             VStack {
-                                Text("Visibility")
+                                Text(Strings.CurrentWeatherView.Visability.title)
                                     .font(.system(size: 18, weight: .regular, design: .rounded))
 
                                 Text("\(viewModel.currentWeather!.visibility/100)%")
@@ -81,14 +81,14 @@ struct CurrentWeatherView: View {
                             }
 
                             VStack {
-                                Text("Wind Speed")
+                                Text(Strings.CurrentWeatherView.WindSpeed.title)
                                     .font(.system(size: 18, weight: .regular, design: .rounded))
                                 Text(String(format: "%g", viewModel.currentWeather!.wind.speed))
                                     .font(.system(size: 32, weight: .regular, design: .rounded))
                             }
                             .padding()
                             VStack {
-                                Text("Pressure")
+                                Text(Strings.CurrentWeatherView.Pressure.title)
                                     .font(.system(size: 18, weight: .regular, design: .rounded))
                                 Text("\(Int(viewModel.currentWeather!.main.pressure))")
                                     .font(.system(size: 32, weight: .regular, design: .rounded))
@@ -102,14 +102,14 @@ struct CurrentWeatherView: View {
                 }
 
             } else {
-                ProgressView("Please wait...")
+                ProgressView(Strings.CurrentWeatherView.ProgressView.title)
                     .progressViewStyle(CircularProgressViewStyle(tint: .purple))
             }
 
         }
         .padding(.top)
         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .greatestFiniteMagnitude, alignment: .top)
-        .background(Color("NiceGreen"))
+        .background(Color(Asset.Assets.niceGreen.color))
     }
 
 }

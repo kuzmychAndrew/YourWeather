@@ -1,0 +1,18 @@
+/* 
+  Localizable.strings
+  YourWeather
+
+  Created by Андрій Кузьмич on 17.10.2022.
+  
+*/
+
+//ListWeatherView
+"ListWeatherView.SearchBar.Title" = "Search ..";
+"ListWeatherView.ProgressView.Title" = "Please wait...";
+
+//CurrentWeatherView
+"CurrentWeatherView.SearchBar.Title" = "Search ..";
+"CurrentWeatherView.WindSpeed.Title" = "Visibility";
+"CurrentWeatherView.Visability.Title" = "Wind Speed";
+"CurrentWeatherView.Pressure.Title" = "Pressure";
+"CurrentWeatherView.ProgressView.Title" = "Please wait...";

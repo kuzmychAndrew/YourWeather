@@ -22,11 +22,11 @@ struct ListWeatherView: View {
 
             ZStack {
                 Rectangle()
-                    .foregroundColor(Color("LightGreen"))
+                    .foregroundColor(Color(Asset.Assets.lightGreen.color))
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(Color("Orange"))
-                    TextField("Search ..", text: $viewModel.location, onCommit: {
+                        .foregroundColor(Color(Asset.Assets.orange.color))
+                    TextField(Strings.ListWeatherView.SearchBar.title, text: $viewModel.location, onCommit: {
                         viewModel.getForecastWeather()
                     })
                     .focused($searching)
@@ -43,7 +43,7 @@ struct ListWeatherView: View {
                     Text(viewModel.forecastWeather!.city)
                         .font(.system(size: 28, weight: .medium, design: .rounded))
                         .frame(width: 300, height: 50, alignment: .leading)
-                        .foregroundColor(Color("NiceGreen"))
+                        .foregroundColor(Color(Asset.Assets.niceGreen.color))
 
                     // Text(viewModel.forecastWeather!.city)
                     List(viewModel.forecastWeather!.list, id: \.self) {item in
@@ -77,7 +77,7 @@ struct ListWeatherView: View {
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         // .ignoresSafeArea(edges: .horizontal)
-                        .background(Color("NiceGreen"))
+                        .background(Color(Asset.Assets.niceGreen.color))
                         .cornerRadius(10)
                         // .deleteDisabled(true)
 
@@ -89,8 +89,8 @@ struct ListWeatherView: View {
                     .padding(.bottom, 25)
                 }
             } else {
-                ProgressView("Please wait...")
-                    .progressViewStyle(CircularProgressViewStyle(tint: Color("NiceGreen")))
+                ProgressView(Strings.ListWeatherView.ProgressView.title)
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color(Asset.Assets.niceGreen.color)))
             }
         }
 
