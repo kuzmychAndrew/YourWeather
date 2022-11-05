@@ -9,7 +9,7 @@ import SwiftUI
 import CoreLocation
 
 extension ListWeatherView {
-    class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
+    final class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         @Published private(set) var forecastWeather: SimpleWeatherModel?
         var location = ""
         var lat: Double?

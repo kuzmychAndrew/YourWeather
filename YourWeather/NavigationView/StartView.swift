@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct StartView: View {
+public struct StartView: View {
     @State var index = 0
-    var body: some View {
+    public var body: some View {
         NavigationView {
             TabView {
                 CurrentWeatherView()

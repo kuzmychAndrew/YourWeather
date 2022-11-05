@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreLocation
 
-struct CurrentWeatherView: View {
+public struct CurrentWeatherView: View {
 
     @State var searchText = ""
     @FocusState var searching: Bool
@@ -18,7 +18,7 @@ struct CurrentWeatherView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
                 }
 
-    var body: some View {
+    public var body: some View {
         VStack {
             ZStack {
                 Rectangle()

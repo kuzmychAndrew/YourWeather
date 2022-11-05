@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ListWeatherView: View {
+public struct ListWeatherView: View {
 
     @StateObject var viewModel: ViewModel
     @FocusState var searching: Bool
@@ -17,7 +17,7 @@ struct ListWeatherView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
 
-    var body: some View {
+    public var body: some View {
         VStack {
 
             ZStack {

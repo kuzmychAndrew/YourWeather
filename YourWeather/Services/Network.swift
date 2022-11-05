@@ -14,7 +14,7 @@ protocol NetworkProtocol {
     func fetchCurrentWeather(lat: Double, lon: Double, comletion: @escaping(CurrentWeather) -> Void)
 }
 
-class Network: ObservableObject, NetworkProtocol {
+final class Network: ObservableObject, NetworkProtocol {
 
     let forecastApiKey = "37639423ae4bdf88965382aef6cf3ccd"
     let forecastBaseUrl = "https://api.openweathermap.org/data/2.5/forecast?"
