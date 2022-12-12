@@ -1,24 +1,20 @@
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let welcome = try? newJSONDecoder().decode(Welcome.self, from: jsonData)
-
 import Foundation
+import Alamofire
 
-struct CurrentWeather: Codable {
-    let weather: [Weather]
-    let main: MainClass
-    let visibility: Int
-    let wind: Wind
+struct CurrentWeather: Decodable {
+    let weather: [Weather]?
+    let main: MainWeather?
+    let visibility: Int?
+    let wind: Wind?
     let rain: Rain?
-    let clouds: Clouds
-    let dt: Int
-    let timezone, id: Int
-    let name: String
-    let cod: Int
+    let clouds: Clouds?
+    let dt: Int?
+    let timezone, id: Int?
+    let name: String?
+    let cod: Int?
 }
 // MARK: - Welcome
-struct Welcome: Codable {
+struct ForecastWeather: Decodable {
     let cod: String
     let message, cnt: Int
     let list: [WeatherList]
@@ -26,7 +22,7 @@ struct Welcome: Codable {
 }
 
 // MARK: - City
-struct City: Codable {
+struct City: Decodable {
     let id: Int
     let name: String
     let coord: Coord
@@ -35,36 +31,34 @@ struct City: Codable {
 }
 
 // MARK: - Coord
-struct Coord: Codable {
+struct Coord: Decodable {
     let lat, lon: Double
 }
 
 // MARK: - List
-struct WeatherList: Codable {
+struct WeatherList: Decodable {
     let dt: Int
-    let main: MainClass
+    let main: MainWeather
     let weather: [Weather]
     let clouds: Clouds
     let wind: Wind
     let visibility: Int
     let pop: Double
     let rain: Rain?
-
     enum CodingKeys: String, CodingKey {
         case dt, main, weather, clouds, wind, visibility, rain, pop
     }
 }
 
 // MARK: - Clouds
-struct Clouds: Codable {
+struct Clouds: Decodable {
     let all: Int
 }
 
 // MARK: - MainClass
-struct MainClass: Codable {
+struct MainWeather: Decodable {
     let temp, feelsLike, tempMin, tempMax: Double
     let pressure: Int
-
     enum CodingKeys: String, CodingKey {
         case temp
         case feelsLike = "feels_like"
@@ -75,21 +69,19 @@ struct MainClass: Codable {
 }
 
 // MARK: - Rain
-struct Rain: Codable {
+struct Rain: Decodable {
     let the3H: Double
-
     enum CodingKeys: String, CodingKey {
         case the3H = "3h"
     }
 }
 
 // MARK: - Weather
-struct Weather: Codable {
+struct Weather: Decodable {
     let id: Int
     let main: String
     let weatherDescription: String
     let icon: String
-
     enum CodingKeys: String, CodingKey {
         case id, main
         case weatherDescription = "description"
@@ -98,7 +90,7 @@ struct Weather: Codable {
 }
 
 // MARK: - Wind
-struct Wind: Codable {
+struct Wind: Decodable {
     let speed: Double
     let deg: Int
     let gust: Double?

@@ -15,12 +15,10 @@ struct SimpleWeatherModel: Codable {
 struct ListWeather: Codable, Identifiable, Hashable {
     var id = UUID()
     let date: String
-    // let temp: Double
     let tempMax: Int
     let tempMin: Int
     let mainWeather: String
     let windSpeed: Double
     let icon: String
     let visibility: Int
-
 }

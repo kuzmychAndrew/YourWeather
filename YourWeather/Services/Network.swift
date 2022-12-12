@@ -10,22 +10,20 @@ import Alamofire
 import CoreLocation
 
 protocol NetworkProtocol {
-    func fetchForecastWeather(lat: Double, lon: Double, comletion: @escaping(SimpleWeatherModel) -> Void)
-    func fetchCurrentWeather(lat: Double, lon: Double, comletion: @escaping(CurrentWeather) -> Void)
+    func fetchForecastWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(SimpleWeatherModel) -> Void)
+    func fetchCurrentWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(CurrentWeather) -> Void)
 }
 
 final class Network: ObservableObject, NetworkProtocol {
-
     let forecastApiKey = "37639423ae4bdf88965382aef6cf3ccd"
     let forecastBaseUrl = "https://api.openweathermap.org/data/2.5/forecast?"
     let currentUrl = "https://api.openweathermap.org/data/2.5/weather?"
-
-    func fetchForecastWeather(lat: Double, lon: Double, comletion: @escaping(SimpleWeatherModel) -> Void) {
+    func fetchForecastWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(SimpleWeatherModel) -> Void) {
         let units = "metric"
         // swiftlint:disable:next line_length
-        if let forecastUrl = URL(string: "\(forecastBaseUrl)lat=\(lat)&lon=\(lon)&units=\(units)&appid=\(forecastApiKey)") {
+        if let forecastUrl = URL(string: "\(forecastBaseUrl)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=\(units)&appid=\(forecastApiKey)") {
             let request = AF.request(forecastUrl)
-            request.responseDecodable(of: Welcome.self) { response in
+            request.responseDecodable(of: ForecastWeather.self) { response in
                 if let weather = response.value {
                     let simpleWeather = self.toSimpleModel(weather: weather)
                     comletion(simpleWeather)
@@ -35,32 +33,27 @@ final class Network: ObservableObject, NetworkProtocol {
             }
         }
     }
-    func fetchCurrentWeather(lat: Double, lon: Double, comletion: @escaping(CurrentWeather) -> Void) {
+    func fetchCurrentWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(CurrentWeather) -> Void) {
         let units = "metric"
-        if let currentUrl = URL(string: "\(currentUrl)lat=\(lat)&lon=\(lon)&units=\(units)&appid=\(forecastApiKey)") {
+        if let currentUrl = URL(string: "\(currentUrl)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=\(units)&appid=\(forecastApiKey)") {
             let request = AF.request(currentUrl)
             request.responseDecodable(of: CurrentWeather.self) { response in
                 if let weather = response.value {
                     comletion(weather)
-
                 } else {
                     print(response.error!)
                 }
             }
-
         }
     }
-
     func miliToDate(date: Int) -> String {
         let date = Date(timeIntervalSince1970: TimeInterval((date)))
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE"
         let rigthDate = formatter.string(from: date as Date)
-
         return rigthDate.capitalized
     }
-
-    func toSimpleModel(weather: Welcome) -> SimpleWeatherModel {
+    func toSimpleModel(weather: ForecastWeather) -> SimpleWeatherModel {
         var listWeather: [ListWeather] = []
         var dayOfWeek: [String] = []
         var temp: [Double] = []
@@ -78,15 +71,12 @@ final class Network: ObservableObject, NetworkProtocol {
                                        icon: ind.weather[0].icon,
                                        visibility: ind.visibility)
                 listWeather.append(item)
-
                 temp = []
                 dayOfWeek.append(newDate)
                 temp.append(ind.main.temp)
-
             }
         }
         let mainWeather = SimpleWeatherModel(city: weather.city.name, list: listWeather)
         return mainWeather
     }
-
 }

@@ -8,18 +8,14 @@
 import SwiftUI
 
 public struct ListWeatherView: View {
-
+    @State var searchText = ""
     @StateObject var viewModel: ViewModel
     @FocusState var searching: Bool
-    @State var searchText = ""
-
     init(viewModel: ViewModel = .init()) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
     public var body: some View {
         VStack {
-
             ZStack {
                 Rectangle()
                     .foregroundColor(Color(Asset.Assets.lightGreen.color))
@@ -37,16 +33,13 @@ public struct ListWeatherView: View {
             .frame(height: 40)
             .cornerRadius(13)
             .padding()
-
-            if viewModel.forecastWeather != nil {
+            if let forecastWeather = viewModel.forecastWeather {
                 VStack {
-                    Text(viewModel.forecastWeather!.city)
+                    Text(forecastWeather.city)
                         .font(.system(size: 28, weight: .medium, design: .rounded))
                         .frame(width: 300, height: 50, alignment: .leading)
                         .foregroundColor(Color(Asset.Assets.niceGreen.color))
-
-                    // Text(viewModel.forecastWeather!.city)
-                    List(viewModel.forecastWeather!.list, id: \.self) {item in
+                    List(forecastWeather.list, id: \.self) {item in
                         HStack {
                             Text(item.date)
                                 .frame(width: 100, alignment: .leading)
@@ -58,33 +51,25 @@ public struct ListWeatherView: View {
                             Text("\(item.tempMin)°")
                                 .foregroundColor(Color.secondary)
                                 .font(.system(size: 28, weight: .regular, design: .rounded))
-
                             Spacer()
                             AsyncImage(url: URL(string:
                                                     "https://openweathermap.org/img/wn/\(item.icon)@2x.png")) { image in
                                 image.resizable()
-
                             }placeholder: {
                                 Color.white
                             }
                             .frame(width: 70, height: 70)
                             .clipShape(RoundedRectangle(cornerRadius: 5))
-
                         }
                         .frame(width: 350, height: 100)
                         .foregroundColor(.white)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
-                        // .ignoresSafeArea(edges: .horizontal)
                         .background(Color(Asset.Assets.niceGreen.color))
                         .cornerRadius(10)
-                        // .deleteDisabled(true)
-
                         .padding(EdgeInsets(top: 0, leading: 8, bottom: 4, trailing: 8))
-
                     }
-                    // .background(Color.white)
                     .scrollContentBackground(.hidden)
                     .padding(.bottom, 25)
                 }
@@ -93,9 +78,7 @@ public struct ListWeatherView: View {
                     .progressViewStyle(CircularProgressViewStyle(tint: Color(Asset.Assets.niceGreen.color)))
             }
         }
-
     }
-
 }
 
 struct ListWeatherView_Previews: PreviewProvider {

@@ -7,63 +7,54 @@
 
 import SwiftUI
 import CoreLocation
+import Combine
 
 extension ListWeatherView {
     final class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
-        @Published private(set) var forecastWeather: SimpleWeatherModel?
         var location = ""
-        var lat: Double?
         var locationManager: CLLocationManager?
-        let network: NetworkProtocol
-        var lon: Double? {
+        var coordinate: CLLocationCoordinate2D? {
             didSet {
                 getStartWeather()
                 locationManager?.stopUpdatingLocation()
                 locationManager = nil
             }
         }
-
+        @Published private(set) var forecastWeather: SimpleWeatherModel?
+        let network: NetworkProtocol
         init(foresactWeather: SimpleWeatherModel? = nil,
              network: NetworkProtocol = Network(),
              locationManager: CLLocationManager = CLLocationManager()) {
             self.locationManager = locationManager
             self.forecastWeather = foresactWeather
             self.network = network
-
             super.init()
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
             locationManager.delegate = self
         }
-
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             if let location = locations.last {
-                self.lat = location.coordinate.latitude
-                self.lon = location.coordinate.longitude
-                print(self.lat as Any, self.lon as Any)
+                self.coordinate = location.coordinate
+                print(location.coordinate.latitude, location.coordinate.longitude)
             }
         }
-
         func getStartWeather() {
-            self.network.fetchForecastWeather(lat: self.lat!, lon: self.lon!) { forecastWeather in
-                self.forecastWeather = forecastWeather
+            self.network.fetchForecastWeather(coordinate: coordinate!) { [weak self] (forecastWeather) in
+                self?.forecastWeather = forecastWeather
             }
         }
-
         func getForecastWeather() {
-            CLGeocoder().geocodeAddressString(self.location) { (placemark, error) in
+            CLGeocoder().geocodeAddressString(self.location) { [weak self](placemark, error) in
                 if let error = error {
                     print(error.localizedDescription)
                 }
-
-                if let lat = placemark?.first?.location?.coordinate.latitude,
-                   let lon = placemark?.first?.location?.coordinate.longitude {
-                    self.network.fetchForecastWeather(lat: lat, lon: lon) { forecastWeather in
-                        self.forecastWeather = forecastWeather
+                if let coordinate = placemark?.first?.location?.coordinate {
+                    self?.network.fetchForecastWeather(coordinate: coordinate) { [weak self] (forecastWeather) in
+                        self?.forecastWeather = forecastWeather
                     }
                 }
             }
         }
-
     }
 }
