@@ -95,3 +95,13 @@ struct Wind: Decodable {
     let deg: Int
     let gust: Double?
 }
+
+struct NetworkError: Error {
+  let initialError: AFError
+  let backendError: BackendError?
+}
+
+struct BackendError: Decodable, Error {
+    var status: String
+    var message: String
+}

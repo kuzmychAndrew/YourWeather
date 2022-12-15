@@ -8,75 +8,38 @@
 import Foundation
 import Alamofire
 import CoreLocation
+import Combine
 
 protocol NetworkProtocol {
-    func fetchForecastWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(SimpleWeatherModel) -> Void)
-    func fetchCurrentWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(CurrentWeather) -> Void)
+    func fetchForecastWeather(url: URL)-> AnyPublisher<DataResponse<ForecastWeather, NetworkError>, Never>
+    func fetchCurrentWeather(url: URL) -> AnyPublisher<DataResponse<CurrentWeather, NetworkError>, Never>
 }
 
 final class Network: ObservableObject, NetworkProtocol {
-    let forecastApiKey = "37639423ae4bdf88965382aef6cf3ccd"
-    let forecastBaseUrl = "https://api.openweathermap.org/data/2.5/forecast?"
-    let currentUrl = "https://api.openweathermap.org/data/2.5/weather?"
-    func fetchForecastWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(SimpleWeatherModel) -> Void) {
-        let units = "metric"
-        // swiftlint:disable:next line_length
-        if let forecastUrl = URL(string: "\(forecastBaseUrl)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=\(units)&appid=\(forecastApiKey)") {
-            let request = AF.request(forecastUrl)
-            request.responseDecodable(of: ForecastWeather.self) { response in
-                if let weather = response.value {
-                    let simpleWeather = self.toSimpleModel(weather: weather)
-                    comletion(simpleWeather)
-                } else {
-                    print(response.error!)
+    func fetchForecastWeather(url: URL)-> AnyPublisher<DataResponse<ForecastWeather, NetworkError>, Never> {
+        return AF.request(url, method: .get)
+            .validate()
+            .publishDecodable(type: ForecastWeather.self)
+            .map {  response in
+                response.mapError { error in
+                    let backendError = response.data.flatMap { try? JSONDecoder().decode(BackendError.self, from: $0)}
+                    return NetworkError(initialError: error, backendError: backendError)
                 }
             }
-        }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
-    func fetchCurrentWeather(coordinate: CLLocationCoordinate2D, comletion: @escaping(CurrentWeather) -> Void) {
-        let units = "metric"
-        if let currentUrl = URL(string: "\(currentUrl)lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&units=\(units)&appid=\(forecastApiKey)") {
-            let request = AF.request(currentUrl)
-            request.responseDecodable(of: CurrentWeather.self) { response in
-                if let weather = response.value {
-                    comletion(weather)
-                } else {
-                    print(response.error!)
+    func fetchCurrentWeather(url: URL) -> AnyPublisher<DataResponse<CurrentWeather, NetworkError>, Never> {
+        return AF.request(url, method: .get)
+            .validate()
+            .publishDecodable(type: CurrentWeather.self)
+            .map { response in
+                response.mapError { error in
+                    let backendError = response.data.flatMap { try? JSONDecoder().decode(BackendError.self, from: $0)}
+                    return NetworkError(initialError: error, backendError: backendError)
                 }
             }
-        }
-    }
-    func miliToDate(date: Int) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval((date)))
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE"
-        let rigthDate = formatter.string(from: date as Date)
-        return rigthDate.capitalized
-    }
-    func toSimpleModel(weather: ForecastWeather) -> SimpleWeatherModel {
-        var listWeather: [ListWeather] = []
-        var dayOfWeek: [String] = []
-        var temp: [Double] = []
-        for ind in weather.list {
-            let newDate = miliToDate(date: ind.dt)
-            if dayOfWeek.contains(newDate) || dayOfWeek.isEmpty {
-                dayOfWeek.append(newDate)
-                temp.append(ind.main.temp)
-            } else {
-                let item = ListWeather(date: miliToDate(date: ind.dt),
-                                       tempMax: Int(temp.max()!),
-                                       tempMin: Int(temp.min()!),
-                                       mainWeather: ind.weather[0].weatherDescription,
-                                       windSpeed: ind.wind.speed,
-                                       icon: ind.weather[0].icon,
-                                       visibility: ind.visibility)
-                listWeather.append(item)
-                temp = []
-                dayOfWeek.append(newDate)
-                temp.append(ind.main.temp)
-            }
-        }
-        let mainWeather = SimpleWeatherModel(city: weather.city.name, list: listWeather)
-        return mainWeather
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 }

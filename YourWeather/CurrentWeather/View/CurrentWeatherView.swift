@@ -24,7 +24,7 @@ public struct CurrentWeatherView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(Color(Asset.Assets.orange.color))
                     TextField(Strings.CurrentWeatherView.SearchBar.title, text: $viewModel.location, onCommit: {
-                        viewModel.getWeather()
+                        viewModel.getCurrentWeather()
                     })
                     .focused($searching)
                 }

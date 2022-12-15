@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct SimpleWeatherModel: Codable {
+struct SimpleWeatherModel: Decodable {
     let city: String
     let list: [ListWeather]
 }
 
-struct ListWeather: Codable, Identifiable, Hashable {
+struct ListWeather: Decodable, Identifiable, Hashable {
     var id = UUID()
     let date: String
     let tempMax: Int
