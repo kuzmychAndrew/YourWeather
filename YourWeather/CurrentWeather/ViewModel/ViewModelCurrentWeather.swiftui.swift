@@ -7,63 +7,71 @@
 
 import SwiftUI
 import CoreLocation
+import Combine
 
 extension CurrentWeatherView {
     final class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
-        @Published private(set) var currentWeather: CurrentWeather?
         var location = ""
-        var lat: Double?
-        var lon: Double? {
+        var locationManager: CLLocationManager?
+        var coordinate: CLLocationCoordinate2D? {
             didSet {
-
                 getStartWeather()
                 locationManager?.stopUpdatingLocation()
                 locationManager = nil
             }
         }
-
-        var locationManager: CLLocationManager?
+        private var cancellableSet: Set<AnyCancellable> = []
+        @Published private(set) var currentWeather: CurrentWeather?
         let network: NetworkProtocol
+        private let apiKey = "37639423ae4bdf88965382aef6cf3ccd"
+        private let currentUrl = "https://api.openweathermap.org/data/2.5/weather?"
         init(currentWeather: CurrentWeather? = nil,
              network: NetworkProtocol = Network(),
              locationManager: CLLocationManager = CLLocationManager()) {
             self.locationManager = locationManager
             self.currentWeather = currentWeather
             self.network = network
-
             super.init()
             locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
             locationManager.delegate = self
-
-        }
-        func getWeather() {
-                CLGeocoder().geocodeAddressString(self.location) { (placemark, error) in
-                    if let error = error {
-                        print(error.localizedDescription)
-                    }
-
-                    if let lat = placemark?.first?.location?.coordinate.latitude,
-                       let lon = placemark?.first?.location?.coordinate.longitude {
-                        self.network.fetchCurrentWeather(lat: lat, lon: lon) { weather in
-                            self.currentWeather = weather
-                        }
-                    }
-                }
         }
         func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             if let location = locations.last {
-                self.lat = location.coordinate.latitude
-                self.lon = location.coordinate.longitude
-                print(self.lat as Any, self.lon as Any)
+                self.coordinate = location.coordinate
+                print(location.coordinate.latitude, location.coordinate.longitude)
+            }
+        }
+        func getCurrentWeather() {
+            CLGeocoder().geocodeAddressString(self.location) {[weak self] (placemark, error) in
+                if let error = error {
+                    print(error.localizedDescription)
+                } else {
+                    guard let coordinate = placemark?.first?.location!.coordinate else { return }
+                    // swiftlint:disable:next line_length
+                    guard let url = URL(string: "\(self?.currentUrl)lat=\(Double(coordinate.latitude))&lon=\(Double(coordinate.longitude))&units=metric&appid=\(self?.apiKey)") else {return}
+                    self?.network.fetchCurrentWeather(url: url)
+                        .sink { [self] (dataResponse) in
+                            if dataResponse.error != nil {
+                                print(dataResponse.error.debugDescription)
+                            } else {
+                                self?.currentWeather = dataResponse.value!.self
+                            }
+                        }.store(in: &self!.cancellableSet)
+                }
             }
         }
         func getStartWeather() {
-                self.network.fetchCurrentWeather(lat: self.lat!, lon: self.lon!) { weather in
-                    self.currentWeather = weather
-                    print(weather)
-                }
-
+            // swiftlint:disable:next line_length
+            guard let url = URL(string: "\(currentUrl)lat=\(Double(self.coordinate!.latitude))&lon=\(Double(self.coordinate!.longitude))&units=metric&appid=\(apiKey)") else {return}
+            self.network.fetchCurrentWeather(url: url)
+                .sink { [weak self] (dataResponse) in
+                    if dataResponse.error != nil {
+                        print(dataResponse.error.debugDescription)
+                    } else {
+                        self?.currentWeather = dataResponse.value!.self
+                    }
+                }.store(in: &cancellableSet)
         }
     }
 }
